@@ -1,5 +1,4 @@
 pyautogui
-click
 pillow
+pynput
 opencv-python
-
