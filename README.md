@@ -11,9 +11,9 @@
   <a href="https://github.com/1Tdd/nexus-autodl/blob/main/LICENSE"><img alt="GitHub License" src="https://img.shields.io/github/license/1Tdd/nexus-autodl?style=for-the-badge"></a>
 </p>
 
-Nexus AutoDL is an autoclicker designed to automate the process of downloading mods from [Nexus Mods](https://nexusmods.com). When using tools like [Wabbajack](https://www.wabbajack.org) or [Portmod](https://gitlab.com/portmod/portmod), modlists can contain hundreds of files, requiring a manual click for each one. This tool automates that tedious process for you.
+> **Note:** This project is an enhanced fork of the original [Nexus AutoDL by parsiad](https://github.com/parsiad/nexus-autodl). A huge thank you to the original creator for laying the foundation for this useful tool.
 
-While Nexus AutoDL is running, any time a mod or collection download page is visible on your screen, it will find and click the download button, letting you step away while your modlist downloads.
+Nexus AutoDL is an autoclicker designed to automate the process of downloading mods from [Nexus Mods](https://nexusmods.com). When using tools like [Wabbajack](https://www.wabbajack.org) or [Portmod](https://gitlab.com/portmod/portmod), modlists can contain hundreds of files, requiring a manual click for each one. This tool automates that tedious process for you.
 
 If you find this tool useful, please **leave a star on GitHub** to help others discover it!
 
@@ -21,17 +21,18 @@ If you find this tool useful, please **leave a star on GitHub** to help others d
 
 ## ✨ Key Features
 
+*   **Integrated Template Creation:** No more manual screenshots! Click "Create Template", drag a box around any element on your screen, and save it instantly.
 *   **Full Control with Pause & Resume:**
     *   **`F3` Key:** Start or Resume the process.
     *   **`F4` Key:** Pause the process at any time.
 *   **Modern Dark Mode Interface:** A sleek, comfortable dark theme for the entire application.
-*   **Non-Intrusive Operation:** The mouse cursor automatically returns to its original position after each click, so the bot doesn't get in your way.
-*   **Configuration is Saved:** The app remembers your last-used templates folder, so you don't have to select it every time.
+*   **Dynamic Config Window:** When you pause, the main window reappears, allowing you to change settings mid-session.
+*   **Non-Intrusive Operation:** The mouse cursor automatically returns to its original position after each click.
+*   **Full Settings Persistence:** The app remembers all your settings (confidence, sleep times, paths, and toggles) between sessions.
 *   **Smart and Stable:** With input validation and a robust single-threaded architecture, the application is designed to be stable and crash-free.
-*   **Human-like Clicks:** Clicks are slightly randomized to appear more natural.
 
 <p align="center">
-  <img alt="App Screenshot" src="https://github.com/user-attachments/assets/959c758e-7874-47a7-991e-6d14ebfddd21" width="600">
+  <img alt="App Screenshot" src="https://github.com/user-attachments/assets/a09db0e9-9336-49a0-bc9d-a396d2349096" width="600">
   <br><em>The new dark mode interface in action.</em>
 </p>
 
@@ -40,21 +41,19 @@ If you find this tool useful, please **leave a star on GitHub** to help others d
 ### For Windows Users (Recommended)
 
 1.  **Download the `.exe`:** Go to the [**Releases Page**](https://github.com/1Tdd/nexus-autodl/releases) and download the `nexus_autodl.exe` file from the latest release.
-2.  **Prepare Your Templates:**
-    *   Create a folder anywhere you like (e.g., on your Desktop).
-    *   Take a screenshot of the download button you want to click (a great tool is the Windows Snipping Tool, **`Win`+`Shift`+`S`**).
-    *   Save this image (e.g., `download_button.png`) inside the folder you just created. You can add multiple images for different buttons.
-3.  **Run the App:**
-    *   Double-click `nexus_autodl.exe` to start the application.
-    *   Use the **`...`** button to select the folder containing your template images. The app will remember this choice for next time.
+2.  **Run the App:**
+    *   Double-click `nexus_autodl.exe` to start.
+    *   Use the **`Create Template`** button to easily capture the download buttons you want to click.
+    *   Alternatively, you can manually place screenshot images in a folder and select it with the **`...`** button.
+3.  **Start Automating:**
     *   Press **`F3`** to start!
 
 ## 🎮 How to Use
 
-1.  **Configure Settings:** Adjust options like `Confidence` or `Sleep` times in the main window if needed.
+1.  **Configure Settings:** Adjust options like `Confidence`, `Sleep` times, or `Always on Top` in the main window if needed.
 2.  **Start/Resume:** Press the **`F3`** key. A log console will appear, and the script will begin searching for your template images.
-3.  **Pause:** Press the **`F4`** key. The script will pause its activity until you resume.
-4.  **Close the Application:** Simply close the main window or the log console using the "X" button.
+3.  **Pause:** Press the **`F4`** key. The main window will reappear, allowing you to change settings.
+4.  **Close the Application:** Simply close the main window or the log console using the "X" button. This will automatically save your settings.
 
 ## ⚡ Maximizing Automation (Optional)
 
@@ -74,7 +73,7 @@ This tool is offered as a convenience for those who may not be in a position to 
 
 Using a bot to download from Nexus Mods is in direct violation of their Terms of Service:
 
-> "Attempting to download files or otherwise record data offered through our services (including but not limited to the Nexus Mods website and the Nexus Mods API) in a fashion that drastically exceeds the expected average, through the use of software automation or otherwise, is prohibited without expressed permission. Users found in violation of this policy will have their account suspended."
+> "Attempting to download files or otherwise record data offered through our services (including but not in a fashion that drastically exceeds the expected average...is prohibited without expressed permission. Users found in violation of this policy will have their account suspended."
 
 This tool is provided for educational and convenience purposes. The user assumes all risk and responsibility for its use. The authors and contributors are not responsible for any account suspension or other consequences.
 
@@ -85,7 +84,8 @@ If you want to compile your own executable from the source code, you will need `
 1.  **Install PyInstaller:**
     ```bash
     pip install pyinstaller
-    ```2.  **Run the build command from the project directory:**
+    ```
+2.  **Run the build command from the project directory:**
     ```bash
     pyinstaller --onefile --windowed --name nexus_autodl nexus_autodl.py
     ```
