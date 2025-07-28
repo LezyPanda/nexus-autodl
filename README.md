@@ -5,15 +5,14 @@
 </p>
 
 <p align="center">
-  <!-- These badges are customized for your repository -->
   <a href="https://github.com/1Tdd/nexus-autodl/releases"><img alt="Latest Release" src="https://img.shields.io/github/v/release/1Tdd/nexus-autodl?style=for-the-badge"></a>
   <a href="https://github.com/1Tdd/nexus-autodl/stargazers"><img alt="GitHub Stars" src="https://img.shields.io/github/stars/1Tdd/nexus-autodl?style=for-the-badge"></a>
   <a href="https://github.com/1Tdd/nexus-autodl/blob/main/LICENSE"><img alt="GitHub License" src="https://img.shields.io/github/license/1Tdd/nexus-autodl?style=for-the-badge"></a>
 </p>
 
-> **Note:** This project is an enhanced fork of the original [Nexus AutoDL by parsiad](https://github.com/parsiad/nexus-autodl). A huge thank you to the original creator for laying the foundation for this useful tool.
+> **Note:** This project is a enhanced fork of the original [Nexus AutoDL by parsiad](https://github.com/parsiad/nexus-autodl). A huge thank you to the original creator for laying the foundation for this useful tool.
 
-Nexus AutoDL is an autoclicker designed to automate the process of downloading mods from [Nexus Mods](https://nexusmods.com). When using tools like [Wabbajack](https://www.wabbajack.org) or [Portmod](https://gitlab.com/portmod/portmod), modlists can contain hundreds of files, requiring a manual click for each one. This tool automates that tedious process for you.
+Nexus AutoDL is an autoclicker designed to automate the process of downloading mods from [Nexus Mods](https://nexusmods.com). When using tools like [Wabbajack](https://www.wabbajack.org), modlists can contain hundreds of files, requiring a manual click for each one. This tool automates that tedious process for you.
 
 If you find this tool useful, please **leave a star on GitHub** to help others discover it!
 
@@ -25,15 +24,15 @@ If you find this tool useful, please **leave a star on GitHub** to help others d
 *   **Full Control with Pause & Resume:**
     *   **`F3` Key:** Start or Resume the process.
     *   **`F4` Key:** Pause the process at any time.
-*   **Modern Dark Mode Interface:** A sleek, comfortable dark theme for the entire application.
-*   **Dynamic Config Window:** When you pause, the main window reappears, allowing you to change settings mid-session.
-*   **Non-Intrusive Operation:** The mouse cursor automatically returns to its original position after each click.
+*   **Customizable Visual Feedback:** Get instant confirmation with a colored border that flashes around matched templates. You can customize the color and duration!
+*   **Modern Dark Mode Interface:** A sleek, comfortable dark theme for the entire application, professionally organized for clarity.
+*   **Dynamic Config Window:** When you pause, the main window reappears, allowing you to change settings like "Always on Top" mid-session.
 *   **Full Settings Persistence:** The app remembers all your settings (confidence, sleep times, paths, and toggles) between sessions.
-*   **Smart and Stable:** With input validation and a robust single-threaded architecture, the application is designed to be stable and crash-free.
+*   **Non-Intrusive Operation:** The mouse cursor automatically returns to its original position after each click.
 
 <p align="center">
-  <img alt="App Screenshot" src="https://github.com/user-attachments/assets/a09db0e9-9336-49a0-bc9d-a396d2349096" width="600">
-  <br><em>The new dark mode interface in action.</em>
+  <img alt="App Screenshot" src="https://github.com/user-attachments/assets/2d866425-47b9-4c82-b136-a20b1f0d9e83" width="600">
+  <br><em>The v0.5.1 interface in action.</em>
 </p>
 
 ## 🚀 Getting Started
@@ -71,11 +70,7 @@ This tool is offered as a convenience for those who may not be in a position to 
 
 ## ⚠️ Caution: Use at Your Own Risk
 
-Using a bot to download from Nexus Mods is in direct violation of their Terms of Service:
-
-> "Attempting to download files or otherwise record data offered through our services (including but not in a fashion that drastically exceeds the expected average...is prohibited without expressed permission. Users found in violation of this policy will have their account suspended."
-
-This tool is provided for educational and convenience purposes. The user assumes all risk and responsibility for its use. The authors and contributors are not responsible for any account suspension or other consequences.
+Using a bot to download from Nexus Mods is in direct violation of their Terms of Service. This tool is provided for educational and convenience purposes. The user assumes all risk and responsibility for its use. The authors and contributors are not responsible for any account suspension or other consequences.
 
 ## 🛠️ Building the .exe from source
 
