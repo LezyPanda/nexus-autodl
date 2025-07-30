@@ -10,9 +10,9 @@
   <a href="https://github.com/1Tdd/nexus-autodl/blob/main/LICENSE"><img alt="GitHub License" src="https://img.shields.io/github/license/1Tdd/nexus-autodl?style=for-the-badge"></a>
 </p>
 
-> **Note:** This project is a enhanced fork of the original [Nexus AutoDL by parsiad](https://github.com/parsiad/nexus-autodl). A huge thank you to the original creator for laying the foundation for this useful tool.
+> **Note:** This project is a significantly enhanced fork of the original [Nexus AutoDL by parsiad](https://github.com/parsiad/nexus-autodl). A huge thank you to the original creator for laying the foundation for this powerful tool.
 
-Nexus AutoDL is an autoclicker designed to automate the process of downloading mods from [Nexus Mods](https://nexusmods.com). When using tools like [Wabbajack](https://www.wabbajack.org), modlists can contain hundreds of files, requiring a manual click for each one. This tool automates that tedious process for you.
+Nexus AutoDL is a versatile automation platform designed to automate repetitive clicking tasks. While it excels at downloading mods from [Nexus Mods](https://nexusmods.com) for tools like [Wabbajack](https://www.wabbajack.org), its powerful new features make it a perfect solution for any task that requires clicking on a series of images, from crafting in games to managing files.
 
 If you find this tool useful, please **leave a star on GitHub** to help others discover it!
 
@@ -20,57 +20,62 @@ If you find this tool useful, please **leave a star on GitHub** to help others d
 
 ## ✨ Key Features
 
-*   **Integrated Template Creation:** No more manual screenshots! Click "Create Template", drag a box around any element on your screen, and save it instantly.
-*   **Full Control with Pause & Resume:**
-    *   **`F3` Key:** Start or Resume the process.
-    *   **`F4` Key:** Pause the process at any time.
+*   **Profile Management:** Create and switch between different **profiles**, each with its own unique set of templates and settings. Use one for Nexus, another for a game, and more!
+*   **Powerful Search Modes:**
+    *   **Priority Mode:** The bot intelligently searches for all templates in alphabetical order and clicks the first one it finds. Perfect for handling dynamic situations like pop-ups.
+    *   **Sequence Mode:** For complex tasks, define an exact, step-by-step order for the bot to follow. It won't proceed to "Step 2" until "Step 1" is complete.
+*   **Integrated Sequence Editor:** A dedicated UI panel that appears in Sequence Mode, allowing you to easily reorder your templates with "Move Up" and "Move Down" buttons.
+*   **Per-Profile Settings:** Every profile saves its own unique settings! Your `Confidence`, `Sleep Times`, `Search Mode`, and `Sequence` order are all remembered.
+*   **Instant Template Creation:** No more manual screenshots! Click "Create Template", drag a box around any element on your screen, and save it instantly to the active profile.
 *   **Customizable Visual Feedback:** Get instant confirmation with a colored border that flashes around matched templates. You can customize the color and duration!
-*   **Modern Dark Mode Interface:** A sleek, comfortable dark theme for the entire application, professionally organized for clarity.
-*   **Dynamic Config Window:** When you pause, the main window reappears, allowing you to change settings like "Always on Top" mid-session.
-*   **Full Settings Persistence:** The app remembers all your settings (confidence, sleep times, paths, and toggles) between sessions.
-*   **Non-Intrusive Operation:** The mouse cursor automatically returns to its original position after each click.
+*   **Polished User Experience:** A sleek dark mode interface, full hotkey control (`F3`/`F4`), non-intrusive mouse behavior, and helpful tooltips for every setting.
 
 <p align="center">
-  <img alt="App Screenshot" src="https://github.com/user-attachments/assets/2d866425-47b9-4c82-b136-a20b1f0d9e83" width="600">
-  <br><em>The v0.5.1 interface in action.</em>
+  <img alt="App Screenshot v0.6.0" src="https://github.com/user-attachments/assets/ca0fe045-6f56-48f6-8e96-50bcbb0b1560" width="600">
+  <br><em>The v0.6.0 interface, featuring the new Sequence Editor.</em>
 </p>
 
 ## 🚀 Getting Started
 
-### For Windows Users (Recommended)
-
 1.  **Download the `.exe`:** Go to the [**Releases Page**](https://github.com/1Tdd/nexus-autodl/releases) and download the `nexus_autodl.exe` file from the latest release.
-2.  **Run the App:**
+2.  **Run the App & Create a Profile:**
     *   Double-click `nexus_autodl.exe` to start.
-    *   Use the **`Create Template`** button to easily capture the download buttons you want to click.
-    *   Alternatively, you can manually place screenshot images in a folder and select it with the **`...`** button.
-3.  **Start Automating:**
+    *   Open the **Profile Manager** via the "Manage..." button.
+    *   Create your first profile (e.g., "Nexus Downloads").
+3.  **Add Templates:**
+    *   Use the **`Create Template`** button to easily capture the images you want the bot to click on.
+4.  **Configure & Automate:**
+    *   Choose your desired **Search Mode** and fine-tune any other settings.
     *   Press **`F3`** to start!
 
 ## 🎮 How to Use
 
-1.  **Configure Settings:** Adjust options like `Confidence`, `Sleep` times, or `Always on Top` in the main window if needed.
-2.  **Start/Resume:** Press the **`F3`** key. A log console will appear, and the script will begin searching for your template images.
-3.  **Pause:** Press the **`F4`** key. The main window will reappear, allowing you to change settings.
-4.  **Close the Application:** Simply close the main window or the log console using the "X" button. This will automatically save your settings.
+1.  **Start/Resume:** Press **`F3`**. A log console will appear, and the script will begin.
+2.  **Pause:** Press **`F4`**. The main window will reappear, allowing you to change settings.
+3.  **Close:** Simply close the main window or the log console to exit. All your settings will be saved automatically.
+
+## 💬 Community & Support
+
+Your feedback is essential! If you encounter a problem or have an idea for a new feature, please get in touch.
+
+*   **⭐ Star the Project:** If you like this app, give it a star on [the GitHub page](https://github.com/1Tdd/nexus-autodl)!
+*   **🐞 Report a Bug:** Found an issue? [Open a new issue](https://github.com/1Tdd/nexus-autodl/issues/new/choose) and describe the problem in as much detail as possible.
+*   **💡 Suggest a Feature:** Have a great idea for the next version? [Let me know](https://github.com/1Tdd/nexus-autodl/issues/new/choose)!
+*   **📄 See the Changelog:** Want to know what's new? Check out the [Releases Page](https://github.com/1Tdd/nexus-autodl/releases).
 
 ## ⚡ Maximizing Automation (Optional)
 
-For a truly seamless, zero-wait download experience, you can use this autoclicker in combination with a user script that bypasses the 5-second countdown on Nexus Mods.
+For a truly seamless, zero-wait download experience on Nexus Mods, you can use this autoclicker in combination with a user script that bypasses the 5-second countdown.
 
 *   **Recommended Tool:** [**Nexus No Wait**](https://greasyfork.org/it/scripts/519037-nexus-no-wait) on Greasy Fork.
 
-By using both tools together, Nexus AutoDL will click the download button, and the "Nexus No Wait" script will ensure the download starts instantly, creating a fully automated workflow.
-
 ## ❤️ A Note on Supporting Nexus Mods
 
-Nexus Mods is an incredible platform run by a dedicated team. **The absolute best way to give back to the community and support the site is by purchasing a [Premium Membership](https://www.nexusmods.com/users/premium).** This gives you uncapped download speeds, removes ads, and directly funds the platform's development and maintenance.
-
-This tool is offered as a convenience for those who may not be in a position to subscribe but still face the challenge of downloading large modlists. If you can, please consider supporting Nexus Mods for their amazing service.
+Nexus Mods is an incredible platform. **The best way to support the site is by purchasing a [Premium Membership](https://www.nexusmods.com/users/premium).** This gives you uncapped download speeds, removes ads, and directly funds the platform. This tool is offered as a convenience for those who may not be in a position to subscribe but still face large modlists.
 
 ## ⚠️ Caution: Use at Your Own Risk
 
-Using a bot to download from Nexus Mods is in direct violation of their Terms of Service. This tool is provided for educational and convenience purposes. The user assumes all risk and responsibility for its use. The authors and contributors are not responsible for any account suspension or other consequences.
+Using a bot to download from Nexus Mods is in direct violation of their Terms of Service. This tool is provided for educational and convenience purposes. The user assumes all risk and responsibility for its use.
 
 ## 🛠️ Building the .exe from source
 
