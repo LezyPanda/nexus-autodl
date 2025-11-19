@@ -1,3 +1,11 @@
 build
 dist
 *.spec
+__pycache__/
+*.py[cod]
+*$py.class
+config.json
+profiles/
+*.tmp
+.vscode/
+.idea/

@@ -77,6 +77,24 @@ Nexus Mods is an incredible platform. **The best way to support the site is by p
 
 Using a bot to download from Nexus Mods is in direct violation of their Terms of Service. This tool is provided for educational and convenience purposes. The user assumes all risk and responsibility for its use.
 
+## 🛠️ Running from Source
+
+If you prefer to run the application directly from the source code:
+
+1.  **Install Dependencies:**
+    ```bash
+    pip install -r requirements.txt
+    ```
+2.  **Run the Application:**
+    You can run the application using the provided helper script:
+    ```bash
+    python run.py
+    ```
+    Or as a module:
+    ```bash
+    python -m nexus_autodl
+    ```
+
 ## 🛠️ Building the .exe from source
 
 If you want to compile your own executable from the source code, you will need `pyinstaller`.
@@ -87,6 +105,6 @@ If you want to compile your own executable from the source code, you will need `
     ```
 2.  **Run the build command from the project directory:**
     ```bash
-    pyinstaller --onefile --windowed --name nexus_autodl nexus_autodl.py
+    pyinstaller --onefile --windowed --name nexus_autodl --add-data "nexus_autodl;nexus_autodl" run.py
     ```
 3.  Your finished `.exe` will be located in the `dist` folder.
