@@ -105,6 +105,6 @@ If you want to compile your own executable from the source code, you will need `
     ```
 2.  **Run the build command from the project directory:**
     ```bash
-    pyinstaller --onefile --windowed --name nexus_autodl --add-data "nexus_autodl;nexus_autodl" run.py
+    pyinstaller --onefile --windowed --name nexus_autodl run.py
     ```
 3.  Your finished `.exe` will be located in the `dist` folder.
