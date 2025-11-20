@@ -2,7 +2,7 @@ NAME:=nexus_autodl
 
 all: build
 
-build: $(NAME).py
+build: run.py
 	pyinstaller --clean --noconsole -F $<
 
 clean:
