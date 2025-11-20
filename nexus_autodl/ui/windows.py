@@ -359,7 +359,7 @@ class EnhancedProfileManagerWindow(Toplevel):
     
     def _populate_profile_list(self):
         self.profile_listbox.delete(0, 'end')
-        profiles = self.parent_app._get_profiles()
+        profiles = self.parent_app.get_profiles()
         
         active_profile = self.parent_app.active_profile.get()
         
