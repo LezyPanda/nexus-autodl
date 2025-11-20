@@ -31,8 +31,8 @@ If you find this tool useful, please **leave a star on GitHub** to help others d
 *   **Polished User Experience:** A sleek dark mode interface, full hotkey control (`F3`/`F4`), non-intrusive mouse behavior, and helpful tooltips for every setting.
 
 <p align="center">
-  <img alt="App Screenshot v0.6.0" src="https://github.com/user-attachments/assets/ca0fe045-6f56-48f6-8e96-50bcbb0b1560" width="600">
-  <br><em>The v0.6.0 interface, featuring the new Sequence Editor.</em>
+  <img alt="App Screenshot v0.6.3" src="https://github.com/user-attachments/assets/7d104ce2-fa0e-402f-ba26-6fcfc97a9696" width="600">
+  <br><em>The v0.6.3 interface.</em>
 </p>
 
 ## 🚀 Getting Started
