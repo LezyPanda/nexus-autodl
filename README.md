@@ -108,3 +108,8 @@ If you want to compile your own executable from the source code, you will need `
     pyinstaller --onefile --windowed --name nexus_autodl run.py
     ```
 3.  Your finished `.exe` will be located in the `dist` folder.
+
+---
+
+## Credits
+[parsiad](https://github.com/parsiad) & [1Tdd](https://github.com/1Tdd)
