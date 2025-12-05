@@ -5,6 +5,7 @@ import shutil
 import weakref
 import threading
 import gc
+from collections import namedtuple
 from datetime import datetime
 from pathlib import Path
 from tkinter import (
@@ -27,6 +28,12 @@ except ImportError:
     pass
 
 import pyautogui
+
+try:
+    import mss
+    MSS_AVAILABLE = True
+except ImportError:
+    MSS_AVAILABLE = False
 from pynput import keyboard
 
 try:
@@ -49,12 +56,13 @@ class NexusAutoDL:
         self.root.resizable(False, False)
         
         self._init_variables()
+        self._init_state()
+        self._refresh_monitors()
         self._load_config()
+        self._ensure_valid_monitor_selection()
         
         self.theme_manager = ThemeManager(is_dark_mode=self.dark_mode.get())
         self.root.config(bg=self.theme_manager.get_color('bg_color'))
-        
-        self._init_state()
         
         self.template_cache = EnhancedTemplateCache(max_cache_size=AppConstants.CACHE_SIZE)
         self.templates: Dict[str, Image.Image] = {}
@@ -80,6 +88,7 @@ class NexusAutoDL:
         self.show_visual_feedback = BooleanVar()
         self.feedback_color = StringVar()
         self.feedback_duration = IntVar()
+        self.monitor_number = IntVar()
         
         self.profiles_root_path = StringVar()
         self.active_profile = StringVar()
@@ -89,6 +98,10 @@ class NexusAutoDL:
         self._after_id: Optional[str] = None
         self._last_active_profile = ""
         self.sequence_index = 0
+
+        self._monitors: List[Dict[str, int]] = []
+        self._monitor_labels: List[str] = []
+        self._monitor_label_map: Dict[str, int] = {}
         
         self.log_window: Optional[Toplevel] = None
         self.log_text_widget: Optional[Text] = None
@@ -104,6 +117,38 @@ class NexusAutoDL:
         except Exception as e:
             print(f"Failed to initialize keyboard listener: {e}")
             self.keyboard_listener = None
+
+    def _refresh_monitors(self):
+        self._monitors.clear()
+        self._monitor_labels.clear()
+        self._monitor_label_map.clear()
+
+        if not MSS_AVAILABLE:
+            return
+
+        try:
+            with mss.mss() as sct:
+                monitors = sct.monitors[1:]
+
+            for idx, mon in enumerate(monitors, start=1):
+                label = (
+                    f"Monitor {idx} ({mon['width']}x{mon['height']} "
+                    f"@ {mon['left']},{mon['top']})"
+                )
+                self._monitors.append(mon)
+                self._monitor_labels.append(label)
+                self._monitor_label_map[label] = idx
+        except Exception as e:
+            print(f"Failed to refresh monitor list: {e}")
+
+    def _ensure_valid_monitor_selection(self):
+        if not self._monitors:
+            self.monitor_number.set(1)
+            return
+
+        current = self.monitor_number.get()
+        if current < 1 or current > len(self._monitors):
+            self.monitor_number.set(1)
     
     def _setup_ttk_style(self):
         try:
@@ -139,6 +184,9 @@ class NexusAutoDL:
             print(f"Failed to setup TTK styles: {e}")
 
     def _setup_ui(self):
+        self._refresh_monitors()
+        self._ensure_valid_monitor_selection()
+
         for widget in self.root.winfo_children():
             widget.destroy()
         
@@ -268,6 +316,19 @@ class NexusAutoDL:
                                                 command=self._toggle_feedback_options, 
                                                 **styles['checkbox'])
         self.visual_feedback_check.grid(row=1, column=0, columnspan=2, sticky='w', pady=(8,3))
+
+        Label(display_frame, text="Target Monitor:", **styles['label']).grid(
+            row=2, column=0, sticky='w', pady=(8, 3)
+        )
+        self.monitor_combobox = ttk.Combobox(
+            display_frame,
+            state="readonly",
+            width=42,
+            font=("Segoe UI", 9)
+        )
+        self.monitor_combobox.grid(row=2, column=1, columnspan=2, sticky='w', padx=(8, 0), pady=(8, 3))
+        self.monitor_combobox.bind("<<ComboboxSelected>>", self._on_monitor_change)
+        self._populate_monitor_selector()
         
         self.feedback_options_frame = Frame(display_frame, bg=self.theme_manager.get_color('bg_color'))
         
@@ -362,6 +423,7 @@ class NexusAutoDL:
             (self.always_on_top_check, "Keeps the application and log windows above all other windows."),
             (self.dark_mode_check, "Switch between Light Mode (default) and Dark Mode themes."),
             (self.visual_feedback_check, "Briefly shows a colored border around a matched template before clicking."),
+            (getattr(self, 'monitor_combobox', None), "Choose which monitor to capture, detect, and click on."),
             (self.color_swatch, "Click to choose the color of the feedback border."),
             (self.color_entry, "The currently selected color in hex format."),
             (self.duration_entry, "How long the feedback border stays on screen, in milliseconds."),
@@ -375,6 +437,31 @@ class NexusAutoDL:
             if widget:
                 tooltip = EnhancedTooltip(widget, text, self.theme_manager)
                 self.tooltips.append(tooltip)
+
+    def _populate_monitor_selector(self):
+        if not hasattr(self, 'monitor_combobox'):
+            return
+
+        if self._monitor_labels:
+            values = self._monitor_labels
+        else:
+            values = ["Monitor 1 (default display)"]
+
+        self.monitor_combobox['values'] = values
+
+        target_index = self.monitor_number.get()
+        current_label = next(
+            (label for label, idx in self._monitor_label_map.items() if idx == target_index),
+            values[0] if values else ""
+        )
+
+        self.monitor_combobox.set(current_label)
+
+    def _on_monitor_change(self, event=None):
+        label = self.monitor_combobox.get()
+        idx = self._monitor_label_map.get(label)
+        if idx:
+            self.monitor_number.set(idx)
     
     def _toggle_theme(self):
         try:
@@ -477,11 +564,20 @@ class NexusAutoDL:
             return
         
         try:
+            self._refresh_monitors()
+            self._ensure_valid_monitor_selection()
             self.root.withdraw()
             self.capture_window = Toplevel(self.root)
-            self.capture_window.attributes("-fullscreen", True)
             self.capture_window.attributes("-alpha", 0.3)
             self.capture_window.attributes("-topmost", True)
+            self.capture_window.overrideredirect(True)
+
+            monitor = self._get_selected_monitor_bounds()
+            if monitor:
+                geometry = f"{monitor['width']}x{monitor['height']}+{monitor['left']}+{monitor['top']}"
+                self.capture_window.geometry(geometry)
+            else:
+                self.capture_window.attributes("-fullscreen", True)
             self.capture_window.focus_set()
             
             self.capture_canvas = Canvas(self.capture_window, cursor="cross", bg="grey")
@@ -506,6 +602,72 @@ class NexusAutoDL:
             self.root.lift()
         except Exception:
             pass
+
+    def _get_selected_monitor_bounds(self) -> Optional[Dict[str, int]]:
+        if not self._monitors:
+            return None
+        idx = self.monitor_number.get()
+        if 1 <= idx <= len(self._monitors):
+            return self._monitors[idx - 1]
+        return None
+
+    def _capture_region_with_mss(self, region: Tuple[int, int, int, int]) -> Image.Image:
+        region_dict = {
+            "left": int(region[0]),
+            "top": int(region[1]),
+            "width": int(region[2]),
+            "height": int(region[3])
+        }
+
+        if MSS_AVAILABLE:
+            try:
+                with mss.mss() as sct:
+                    sct_img = sct.grab(region_dict)
+                return Image.frombytes("RGB", sct_img.size, sct_img.rgb)
+            except Exception as e:
+                self._log(f"mss capture failed, falling back to pyautogui: {e}", "WARN")
+
+        return pyautogui.screenshot(region=region)
+
+    def _grab_monitor_screenshot(self) -> Tuple[Image.Image, int, int]:
+        monitor = self._get_selected_monitor_bounds()
+
+        if MSS_AVAILABLE and monitor:
+            try:
+                with mss.mss() as sct:
+                    sct_img = sct.grab(monitor)
+                image = Image.frombytes("RGB", sct_img.size, sct_img.rgb)
+                return image, monitor.get("left", 0), monitor.get("top", 0)
+            except Exception as e:
+                self._log(f"mss monitor capture failed, falling back: {e}", "WARN")
+
+        screenshot = pyautogui.screenshot()
+        return screenshot, 0, 0
+
+    def _apply_screen_offset(self, box, offset_x: int, offset_y: int):
+        if not box:
+            return box
+        if offset_x == 0 and offset_y == 0:
+            return box
+        try:
+            return box.__class__(
+                box.left + offset_x,
+                box.top + offset_y,
+                box.width,
+                box.height
+            )
+        except Exception:
+            try:
+                # Fallback for tuple-like boxes
+                new_box = namedtuple("Box", ["left", "top", "width", "height"])(
+                    box[0] + offset_x,
+                    box[1] + offset_y,
+                    box[2],
+                    box[3]
+                )
+                return new_box
+            except Exception:
+                return box
     
     def _cancel_capture(self, event=None):
         try:
@@ -550,8 +712,17 @@ class NexusAutoDL:
                 )
                 return
             
-            region_tuple = (int(x1), int(y1), int(width), int(height))
-            img = pyautogui.screenshot(region=region_tuple)
+            monitor = self._get_selected_monitor_bounds()
+            offset_x = monitor.get("left", 0) if monitor else 0
+            offset_y = monitor.get("top", 0) if monitor else 0
+
+            region_tuple = (
+                int(x1 + offset_x),
+                int(y1 + offset_y),
+                int(width),
+                int(height)
+            )
+            img = self._capture_region_with_mss(region_tuple)
             
             self._save_captured_template(img)
             
@@ -655,6 +826,12 @@ class NexusAutoDL:
             self.feedback_duration.set(int(duration))
         else:
             self.feedback_duration.set(400)
+
+        monitor_number = self.config.get("monitor_number", 1)
+        if isinstance(monitor_number, int) and monitor_number > 0:
+            self.monitor_number.set(monitor_number)
+        else:
+            self.monitor_number.set(1)
     
     def _save_config(self):
         try:
@@ -668,6 +845,7 @@ class NexusAutoDL:
                 "show_visual_feedback": self.show_visual_feedback.get(),
                 "feedback_color": self.feedback_color.get(),
                 "feedback_duration": self.feedback_duration.get(),
+                "monitor_number": self.monitor_number.get(),
                 "profile_settings": self.config.get("profile_settings", {})
             }
             
@@ -1072,17 +1250,17 @@ class NexusAutoDL:
                 self._pause_handler()
                 return
             
-            screenshot = pyautogui.screenshot()
+            screenshot, offset_x, offset_y = self._grab_monitor_screenshot()
             
             if self.search_mode.get() == "sequence": 
-                self._perform_match_sequence(screenshot)
+                self._perform_match_sequence(screenshot, offset_x, offset_y)
             else: 
-                self._perform_match_priority(screenshot)
+                self._perform_match_priority(screenshot, offset_x, offset_y)
                 
         except Exception as e:
             self._log(f"Screenshot error: {e}. Retrying...", "WARN")
     
-    def _perform_match_priority(self, screenshot):
+    def _perform_match_priority(self, screenshot, offset_x: int, offset_y: int):
         try:
             search_kwargs = {"grayscale": self.grayscale.get()}
             if HAS_CV2: 
@@ -1100,8 +1278,9 @@ class NexusAutoDL:
                 try:
                     box = pyautogui.locate(image, screenshot, **search_kwargs)
                     if box: 
+                        adjusted_box = self._apply_screen_offset(box, offset_x, offset_y)
                         self._log(f"Found match: {name}")
-                        self._handle_found_match(box, name)
+                        self._handle_found_match(adjusted_box, name)
                         return
                         
                 except pyautogui.PyAutoGUIException as e: 
@@ -1114,7 +1293,7 @@ class NexusAutoDL:
         except Exception as e:
             self._log(f"Error in priority match: {e}", "ERROR")
     
-    def _perform_match_sequence(self, screenshot):
+    def _perform_match_sequence(self, screenshot, offset_x: int, offset_y: int):
         try:
             sequence = list(self.sequence_listbox.get(0, 'end'))
             if not sequence: 
@@ -1140,9 +1319,10 @@ class NexusAutoDL:
             try:
                 box = pyautogui.locate(image_to_find, screenshot, **search_kwargs)
                 if box:
+                    adjusted_box = self._apply_screen_offset(box, offset_x, offset_y)
                     self._log(f"Found sequence match: {target_name}")
                     self.sequence_index = (self.sequence_index + 1) % len(sequence)
-                    self._handle_found_match(box, target_name)
+                    self._handle_found_match(adjusted_box, target_name)
                 else:
                     self._log(f"Sequence step '{target_name}' not found, waiting...")
                     
@@ -1237,6 +1417,8 @@ class NexusAutoDL:
             if not HAS_CV2:
                 self._log("Note: OpenCV not installed. Confidence setting will be ignored. "
                          "Install with: pip install opencv-python", "WARN")
+            if not MSS_AVAILABLE:
+                self._log("Note: mss not installed. Install 'mss' for accurate multi-monitor capture.", "WARN")
             
         except Exception as e:
             messagebox.showerror("Log Window Error", f"Could not create log window: {e}")

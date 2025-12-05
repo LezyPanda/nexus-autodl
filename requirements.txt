@@ -2,3 +2,4 @@ pyautogui
 pillow
 pynput
 opencv-python
+mss
