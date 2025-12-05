@@ -16,23 +16,36 @@ from tkinter import (
     LabelFrame
 )
 from tkinter import ttk
-from typing import Dict, List, Optional, Tuple, Union, Any
+from typing import Dict, List, Optional, Tuple, Union, Any, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from PIL.Image import Image as PILImageType
+else:
+    PILImageType = Any
 
 try:
     from PIL import Image, ImageTk
     from PIL import UnidentifiedImageError
-    
-    def open_image(path):
-        return Image.open(path)
 except ImportError:
-    pass
+    Image = None  # type: ignore[assignment]
+    ImageTk = None  # type: ignore[assignment]
+    UnidentifiedImageError = Exception  # type: ignore[assignment]
+
+
+def open_image(path: str):
+    if Image is None:
+        raise ImportError("Pillow is required to open images")
+    return Image.open(path)
 
 import pyautogui
 
+mss: Any
 try:
-    import mss
+    import mss as mss_module
+    mss = mss_module
     MSS_AVAILABLE = True
 except ImportError:
+    mss = None  # type: ignore[assignment]
     MSS_AVAILABLE = False
 from pynput import keyboard
 
@@ -65,7 +78,7 @@ class NexusAutoDL:
         self.root.config(bg=self.theme_manager.get_color('bg_color'))
         
         self.template_cache = EnhancedTemplateCache(max_cache_size=AppConstants.CACHE_SIZE)
-        self.templates: Dict[str, Image.Image] = {}
+        self.templates: Dict[str, PILImageType] = {}
         
         self._setup_ttk_style()
         self._setup_ui()
@@ -106,6 +119,10 @@ class NexusAutoDL:
         self.log_window: Optional[Toplevel] = None
         self.log_text_widget: Optional[Text] = None
         self.capture_window: Optional[Toplevel] = None
+        self.capture_canvas: Optional[Canvas] = None
+        self.rect: Optional[int] = None
+        self.start_x: Optional[float] = None
+        self.start_y: Optional[float] = None
         
         self.hover_effects: List[OptimizedHoverEffect] = []
         self.tooltips: List[EnhancedTooltip] = []
@@ -492,10 +509,11 @@ class NexusAutoDL:
             messagebox.showerror("Theme Error", f"Could not switch theme: {e}")
     
     def _close_log_window_if_open(self) -> bool:
-        log_was_open = self.log_window is not None and self.log_window.winfo_exists()
-        if log_was_open:
+        log_window = self.log_window
+        log_was_open = log_window is not None and log_window.winfo_exists()
+        if log_was_open and log_window is not None:
             try:
-                self.log_window.destroy()
+                log_window.destroy()
             except Exception:
                 pass
             finally:
@@ -611,7 +629,7 @@ class NexusAutoDL:
             return self._monitors[idx - 1]
         return None
 
-    def _capture_region_with_mss(self, region: Tuple[int, int, int, int]) -> Image.Image:
+    def _capture_region_with_mss(self, region: Tuple[int, int, int, int]) -> PILImageType:
         region_dict = {
             "left": int(region[0]),
             "top": int(region[1]),
@@ -619,8 +637,10 @@ class NexusAutoDL:
             "height": int(region[3])
         }
 
-        if MSS_AVAILABLE:
+        if MSS_AVAILABLE and mss is not None:
             try:
+                if Image is None:
+                    raise RuntimeError("Pillow is required for mss conversion")
                 with mss.mss() as sct:
                     sct_img = sct.grab(region_dict)
                 return Image.frombytes("RGB", sct_img.size, sct_img.rgb)
@@ -629,11 +649,13 @@ class NexusAutoDL:
 
         return pyautogui.screenshot(region=region)
 
-    def _grab_monitor_screenshot(self) -> Tuple[Image.Image, int, int]:
+    def _grab_monitor_screenshot(self) -> Tuple[PILImageType, int, int]:
         monitor = self._get_selected_monitor_bounds()
 
-        if MSS_AVAILABLE and monitor:
+        if MSS_AVAILABLE and monitor and mss is not None:
             try:
+                if Image is None:
+                    raise RuntimeError("Pillow is required for mss conversion")
                 with mss.mss() as sct:
                     sct_img = sct.grab(monitor)
                 image = Image.frombytes("RGB", sct_img.size, sct_img.rgb)
@@ -680,24 +702,36 @@ class NexusAutoDL:
             self._ensure_main_window_visible()
     
     def _on_capture_press(self, event):
-        self.start_x = self.capture_canvas.canvasx(event.x)
-        self.start_y = self.capture_canvas.canvasy(event.y)
+        if self.capture_canvas is None:
+            return
+
+        start_x = self.capture_canvas.canvasx(event.x)
+        start_y = self.capture_canvas.canvasy(event.y)
+        self.start_x = start_x
+        self.start_y = start_y
         self.rect = self.capture_canvas.create_rectangle(
-            self.start_x, self.start_y, self.start_x, self.start_y, 
+            start_x, start_y, start_x, start_y, 
             outline='red', width=2
         )
     
     def _on_capture_drag(self, event):
+        if self.capture_canvas is None or self.rect is None or self.start_x is None or self.start_y is None:
+            return
+
         cur_x = self.capture_canvas.canvasx(event.x)
         cur_y = self.capture_canvas.canvasy(event.y)
         self.capture_canvas.coords(self.rect, self.start_x, self.start_y, cur_x, cur_y)
     
     def _on_capture_release(self, event):
+        if self.capture_canvas is None or self.start_x is None or self.start_y is None:
+            return
+
         try:
             end_x = self.capture_canvas.canvasx(event.x)
             end_y = self.capture_canvas.canvasy(event.y)
             
-            self.capture_window.destroy()
+            if self.capture_window is not None and self.capture_window.winfo_exists():
+                self.capture_window.destroy()
             self.capture_window = None
             
             x1, y1 = min(self.start_x, end_x), min(self.start_y, end_y)
@@ -769,6 +803,8 @@ class NexusAutoDL:
             pass
     
     def _write_log_message(self, message: str, level: str):
+        if self.log_text_widget is None:
+            return
         try:
             self.log_text_widget.config(state="normal")
             timestamp = datetime.now().strftime('%H:%M:%S')
@@ -1262,9 +1298,9 @@ class NexusAutoDL:
     
     def _perform_match_priority(self, screenshot, offset_x: int, offset_y: int):
         try:
-            search_kwargs = {"grayscale": self.grayscale.get()}
+            search_kwargs: Dict[str, object] = {"grayscale": bool(self.grayscale.get())}
             if HAS_CV2: 
-                search_kwargs["confidence"] = self.confidence.get()
+                search_kwargs["confidence"] = float(self.confidence.get())
             
             sorted_template_names = sorted(self.templates.keys(), key=str.lower)
             
@@ -1312,9 +1348,9 @@ class NexusAutoDL:
             
             self._log(f"Searching for sequence step {self.sequence_index + 1}/{len(sequence)}: '{target_name}'")
             
-            search_kwargs = {"grayscale": self.grayscale.get()}
+            search_kwargs: Dict[str, object] = {"grayscale": bool(self.grayscale.get())}
             if HAS_CV2: 
-                search_kwargs["confidence"] = self.confidence.get()
+                search_kwargs["confidence"] = float(self.confidence.get())
             
             try:
                 box = pyautogui.locate(image_to_find, screenshot, **search_kwargs)
