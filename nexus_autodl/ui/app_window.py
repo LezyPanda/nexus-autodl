@@ -335,7 +335,7 @@ class NexusAutoDL:
         self.visual_feedback_check.grid(row=1, column=0, columnspan=2, sticky='w', pady=(8,3))
 
         Label(display_frame, text="Target Monitor:", **styles['label']).grid(
-            row=2, column=0, sticky='w', pady=(8, 3)
+            row=3, column=0, sticky='w', pady=(8, 3)
         )
         self.monitor_combobox = ttk.Combobox(
             display_frame,
@@ -343,7 +343,7 @@ class NexusAutoDL:
             width=42,
             font=("Segoe UI", 9)
         )
-        self.monitor_combobox.grid(row=2, column=1, columnspan=2, sticky='w', padx=(8, 0), pady=(8, 3))
+        self.monitor_combobox.grid(row=3, column=1, columnspan=2, sticky='w', padx=(8, 0), pady=(8, 3))
         self.monitor_combobox.bind("<<ComboboxSelected>>", self._on_monitor_change)
         self._populate_monitor_selector()
         
